@@ -32,6 +32,39 @@ class Table:
             # Loop through all of the states and fill in the probability of the previous
             self.findPrevious(s, len(self.obs)-1)
 
+    def computeStates(self):
+        # Compute the most likely seqence of state
+        states = [-1] * len(self.obs) # Create an array that we will put the states into
+
+        count = len(self.obs) - 1
+
+        # Calculate the end state with the highest probability
+        endStateMaxProb = -1
+        endStateIndex = -1
+
+        for i in range(N_STATES):
+            endProb = (self.table[i][count]).prob
+
+            if endProb > endStateMaxProb:
+                endStateMaxProb = endProb
+                endStateIndex = i
+
+        endState = self.table[endStateIndex][count]
+        states[count] = endState.state
+        prevState = endState
+
+        for _ in range(len(self.obs)):
+            # Loop through the previous state and get that state
+            prevState = self.table[prevState.previousState][count - 1]
+
+            count = count - 1
+
+            # Add this state to the list of states
+            states[count] = prevState.state
+
+        print("The list of output states:")
+        print(states)
+
     def findPrevious(self, state, outputIndex):
         print("State: ", state, " Output Index: ", outputIndex)
         # print("type(state): ", type(state), " type(outputIndex) ", type(outputIndex))
@@ -144,3 +177,6 @@ if __name__ == "__main__":
 
     print("Building the table")
     table.buildTable()
+
+    print("Computing the otuput states")
+    table.computeStates()
